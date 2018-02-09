@@ -1,11 +1,10 @@
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Created on Fri Feb  9 02:18:39 2018
+Created on Sat Feb 10 04:00:35 2018
 
 @author: srv_twry
-
 """
-
 """
     Initial setup.
 """
@@ -55,38 +54,23 @@ for i in range(0, dataset_size):
     
 # Creating the bag of words model
 from sklearn.feature_extraction.text import CountVectorizer
-cv = CountVectorizer(max_features = 1000)
+cv = CountVectorizer(max_features = 1200)
 X_title = cv.fit_transform(title_corpus).toarray()
-cv2 = CountVectorizer(max_features = 5000) 
-X_body = cv2.fit_transform(body_corpus).toarray()
-X = np.concatenate((X_title, X_body, dataset.iloc[:,4:6].values), axis = 1)
+X_body = cv.fit_transform(body_corpus).toarray()
+X = np.concatenate((X_title, X_body, dataset.iloc[:,4:6]), axis = 1)
 y = dataset.iloc[:,-1].values
-
-# Converting the problem to a binary classification.
-for i in range(0, dataset_size):
-    if y[i] == 'open':
-        y[i] = 0
-    else:
-        y[i] = 1
-
-y=y.astype('int')
 
 # Splitting the dataset into the Training set and Test set
 from sklearn.cross_validation import train_test_split
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.20)
 
-# Feature Scaling
-from sklearn.preprocessing import StandardScaler
-sc = StandardScaler()
-X_train = sc.fit_transform(X_train)
-X_test = sc.transform(X_test)
 
 """
     Training and Testing.
 """
-from sklearn.naive_bayes import GaussianNB
+from sklearn import svm
 classifier = GaussianNB()
-classifier.fit(X_train, y_train)
+classifier.partial_fit(X_train, y_train, np.unique(y_train))
 
 # Predicting the Test set results
 y_pred = classifier.predict(X_test)
@@ -97,12 +81,3 @@ cm = confusion_matrix(y_test, y_pred)
 
 # Getting the percentage correct predictions
 np.mean(y_pred == y_test)
-    
-
-    
-    
-
-
-
-
-
