@@ -55,7 +55,7 @@ for i in range(0, dataset_size):
     
 # Creating the bag of words model
 from sklearn.feature_extraction.text import CountVectorizer
-cv = CountVectorizer(max_features = 1200)
+cv = CountVectorizer(max_features = 1000)
 X_title = cv.fit_transform(title_corpus).toarray()
 X_body = cv.fit_transform(body_corpus).toarray()
 X = np.concatenate((X_title, X_body, dataset.iloc[:,4:6]), axis = 1)
@@ -67,7 +67,7 @@ X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.20)
 
 # Feature Scaling
 from sklearn.preprocessing import StandardScaler
-sc = StandardScaler()
+sc = StandardScaler(with_mean = True, with_std = True)
 X_train = sc.fit_transform(X_train)
 X_test = sc.transform(X_test)
 
@@ -75,7 +75,7 @@ X_test = sc.transform(X_test)
     Training and Testing.
 """
 from sklearn.ensemble import RandomForestClassifier
-classifier = RandomForestClassifier(n_estimators = 10, criterion = 'entropy', random_state = 0)
+classifier = RandomForestClassifier(n_estimators = 500, criterion = 'gini')
 classifier.fit(X_train, y_train)
 
 # Predicting the Test set results
