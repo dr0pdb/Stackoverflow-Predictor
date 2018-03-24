@@ -14,7 +14,7 @@ import matplotlib.pyplot as plt
 import pandas as pd
 
 # Importing the dataset
-dataset_size = 5000
+dataset_size = 10000
 dataset = pd.read_csv('dataset/dataset.csv')
 dataset = dataset.iloc[0:dataset_size,:]
 
@@ -59,6 +59,15 @@ X_title = cv.fit_transform(title_corpus).toarray()
 X_body = cv.fit_transform(body_corpus).toarray()
 X = np.concatenate((X_title, X_body, dataset.iloc[:,4:6]), axis = 1)
 y = dataset.iloc[:,-1].values
+
+# Converting the problem to a binary classification.
+for i in range(0, dataset_size):
+    if y[i] == 'open':
+        y[i] = 0
+    else:
+        y[i] = 1
+
+y=y.astype('int')
 
 # Splitting the dataset into the Training set and Test set
 from sklearn.cross_validation import train_test_split

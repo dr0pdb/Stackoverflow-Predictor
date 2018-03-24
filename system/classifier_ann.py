@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 """
 Created on Sun Mar 18 02:31:06 2018
+
 @author: srv_twry
 """
 
@@ -60,6 +61,15 @@ X_body = cv.fit_transform(body_corpus).toarray()
 X = np.concatenate((X_title, X_body, dataset.iloc[:,4:6]), axis = 1)
 y = dataset.iloc[:,-1].values
 
+# Converting the problem to a binary classification.
+for i in range(0, dataset_size):
+    if y[i] == 'open':
+        y[i] = False
+    else:
+        y[i] = True
+
+y=y.astype('bool')
+
 # Splitting the dataset into the Training set and Test set
 from sklearn.cross_validation import train_test_split
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.20)
@@ -73,12 +83,29 @@ X_test = sc.transform(X_test)
 """
     Training and Testing.
 """
-from sklearn.ensemble import RandomForestClassifier
-classifier = RandomForestClassifier(n_estimators = 500, criterion = 'gini')
-classifier.fit(X_train, y_train)
+import keras
+from keras.models import Sequential
+from keras.layers import Dense
+
+# Initialise the ANN
+classifier = Sequential()
+classifier.add(Dense(output_dim = 1001, init = 'uniform', activation = 'relu', input_dim = 2002))
+
+# Adding the second layer
+classifier.add(Dense(output_dim = 1001, init = 'uniform', activation = 'relu'))
+
+# Adding the output layer
+classifier.add(Dense(output_dim = 1, init = 'uniform', activation = 'sigmoid'))
+
+# Compiling the ANN
+classifier.compile(optimizer = 'adam', loss = 'binary_crossentropy', metrics = ['accuracy'])
+
+# Fitting the classifier
+classifier.fit(X_train, y_train, batch_size = 10, nb_epoch = 10)
 
 # Predicting the Test set results
 y_pred = classifier.predict(X_test)
+y_pred = (y_pred > 0.5)
 
 # Making the Confusion Matrix
 from sklearn.metrics import confusion_matrix
