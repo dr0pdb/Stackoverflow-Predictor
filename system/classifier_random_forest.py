@@ -60,6 +60,15 @@ X_body = cv.fit_transform(body_corpus).toarray()
 X = np.concatenate((X_title, X_body, dataset.iloc[:,4:6]), axis = 1)
 y = dataset.iloc[:,-1].values
 
+# Converting the problem to a binary classification.
+for i in range(0, dataset_size):
+    if y[i] == 'open':
+        y[i] = 0
+    else:
+        y[i] = 1
+
+y=y.astype('int')
+
 # Splitting the dataset into the Training set and Test set
 from sklearn.cross_validation import train_test_split
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.20)
