@@ -1,5 +1,7 @@
 from django.shortcuts import render, redirect
+from django.urls import reverse
 from .forms import QuestionForm
+from .utils import Question
 
 
 
@@ -11,15 +13,18 @@ def home_screen(request):
         # check whether it's valid:
         if form.is_valid():
             # processing the data
-        	
+            data = form.cleaned_data
+            title = data['title']
+            reputation = data['reputation']
+            deleted_questions = data['deleted_questions']
+            body = data['body']
+            question = Question(title, reputation, deleted_questions, body)
+            value = question.predict_outcome()
+            print(value)
             # redirect to the results page with the result:
-            return redirect('result', {})
+            return render(request, 'mainapp/result.html', {'question' : question})
 
     # if a GET (or any other method) we'll create a blank form
     else:
         form = QuestionForm()
     return render(request, 'mainapp/home_screen.html', {'form': form})
-
-
-def result(request):
-	pass
