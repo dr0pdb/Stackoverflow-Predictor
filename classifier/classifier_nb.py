@@ -15,7 +15,7 @@ import matplotlib.pyplot as plt
 import pandas as pd
 
 # Importing the dataset
-dataset_size = 5000
+dataset_size = 15000
 dataset = pd.read_csv('dataset/dataset.csv')
 dataset = dataset.iloc[0:dataset_size,:]
 
@@ -97,6 +97,11 @@ cm = confusion_matrix(y_test, y_pred)
 
 # Getting the percentage correct predictions
 np.mean(y_pred == y_test)
+
+# save the model to disk
+from sklearn.externals import joblib
+filename = 'finalized_model.sav'
+joblib.dump(classifier, filename)
     
 
     

@@ -13,6 +13,7 @@ from nltk.stem.porter import PorterStemmer
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.preprocessing import StandardScaler
 from sklearn.feature_extraction.text import CountVectorizer
+from sklearn.externals import joblib
 
 
 class Question(object):
@@ -37,7 +38,8 @@ class Question(object):
 		X = np.concatenate((X_title, X_body, self.reputation, self.deleted_questions), axis = 1)
 		X_final = applyFeatureScaling(X)
 		# Deserialize the classifier from the file and return the predicted outcome
-		
+		filename = 'classifier.sav'
+		classifier = joblib.load(filename)
 		return classifier.predict(X_final)
 
 
@@ -54,6 +56,7 @@ class Question(object):
 	    cv = CountVectorizer(max_features = 1000)
 	    return cv.fit_transform(title_corpus)
 
+
 	def clearBody(self):
 		body_corpus = []
 		temp_body = re.sub('[^a-zA-Z]', ' ', self.body)
@@ -66,7 +69,9 @@ class Question(object):
 	    cv = CountVectorizer(max_features = 1000)
 	    return cv.fit_transform(body_corpus)
 
+
    	def applyFeatureScaling(self, X):
    		sc = StandardScaler(with_mean = True, with_std = True)
    		return sc.fit_transform(X)	
 		
+ 

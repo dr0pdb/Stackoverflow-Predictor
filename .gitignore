@@ -106,3 +106,5 @@ ENV/
 .idea/
 
 classifier/dataset
+
+mainapp/classifier.sav
