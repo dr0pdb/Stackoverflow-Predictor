@@ -19,10 +19,9 @@ def home_screen(request):
             deleted_questions = data['deleted_questions']
             body = data['body']
             question = Question(title, reputation, deleted_questions, body)
-            value = question.predict_outcome()
-            print(value)
+            outcome = question.predict_outcome()
             # redirect to the results page with the result:
-            return render(request, 'mainapp/result.html', {'question' : question})
+            return render(request, 'mainapp/result.html', {'outcome' : outcome})
 
     # if a GET (or any other method) we'll create a blank form
     else:

@@ -51,11 +51,19 @@ for i in range(0, dataset_size):
     body = [ps.stem(word) for word in body if not word in set(stopwords.words('english'))]
     body = ' '.join(body)
     body_corpus.append(body)
-    
+
+   
+from sklearn.externals import joblib
+filename_title_corpus = 'title_corpus.sav'
+filename_body_corpus = 'body_corpus.sav'
+joblib.dump(title_corpus, filename_title_corpus)
+joblib.dump(body_corpus, filename_body_corpus)
+
 # Creating the bag of words model
 from sklearn.feature_extraction.text import CountVectorizer
-cv = CountVectorizer(max_features = 1000)
+cv = CountVectorizer(max_features = 500)
 X_title = cv.fit_transform(title_corpus).toarray()
+cv2 = CountVectorizer(max_features = 1000)
 X_body = cv.fit_transform(body_corpus).toarray()
 X = np.concatenate((X_title, X_body, dataset.iloc[:,4:6]), axis = 1)
 y = dataset.iloc[:,-1].values
@@ -67,7 +75,15 @@ for i in range(0, dataset_size):
     else:
         y[i] = 1
 
+filename_reputation = 'reputation.sav'
+joblib.dump(dataset.iloc[:,4:5], filename_reputation)
+
+filename_deleted = 'deleted.sav'
+joblib.dump(dataset.iloc[:,5:6], filename_deleted)
+
 y=y.astype('int')
+filename_y = 'y.sav'
+joblib.dump(y, filename_y)
 
 # Splitting the dataset into the Training set and Test set
 from sklearn.cross_validation import train_test_split
@@ -95,8 +111,3 @@ cm = confusion_matrix(y_test, y_pred)
 
 # Getting the percentage correct predictions
 np.mean(y_pred == y_test)
-
-# save the model to disk
-from sklearn.externals import joblib
-filename = 'classifier.sav'
-joblib.dump(classifier, filename)

@@ -6,13 +6,13 @@ import numpy as np
 import pandas as pd
 import re
 import nltk
-nltk.download('stopwords')
 from nltk.corpus import stopwords
 from nltk.stem.porter import PorterStemmer
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.preprocessing import StandardScaler
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.externals import joblib
+from sklearn.ensemble import RandomForestClassifier
 
 
 class Question(object):
@@ -32,20 +32,27 @@ class Question(object):
 
 	# The function used to predict the outcome
 	def predict_outcome(self):
-		X_title = self.clearTitle().toarray()
-		X_body = self.clearBody().toarray()
+		X_title = self.clearTitle()
+		X_body = self.clearBody()
 		reputation_array = np.asarray(self.reputation) 
 		deleted_questions_array = np.asarray(self.deleted_questions)
-		X = np.concatenate((X_title, X_body, np.reshape(reputation_array, (1,1)), np.reshape(deleted_questions_array, (1,1))), axis = 1)
+
+		# load serialised data	
+		reputation_full = joblib.load('mainapp/reputation.sav')
+		deleted_full = joblib.load('mainapp/deleted.sav')
+		reputation_full = np.concatenate((reputation_full, np.reshape(reputation_array, (1,1))), axis = 0)
+		deleted_full = np.concatenate((deleted_full, np.reshape(deleted_questions_array, (1,1))), axis = 0)
+		X = np.concatenate((X_title, X_body, reputation_full, deleted_full), axis = 1)
 		X_final = self.applyFeatureScaling(X)
-		# Deserialize the classifier from the file and return the predicted outcome
-		filename = 'mainapp/classifier.sav'
-		classifier = joblib.load(filename)
-		return classifier.predict(X_final)
+		y = joblib.load('mainapp/y.sav')
+		
+		classifier = RandomForestClassifier(n_estimators = 500, criterion = 'gini')
+		classifier.fit(X_final[:-1,:], y)
+		return classifier.predict(np.reshape((X_final[-1,:]), (1, -1)))
 
 
 	def clearTitle(self):
-		title_corpus = []
+		title_corpus = joblib.load('mainapp/title_corpus.sav')
 		temp_title = re.sub('[^a-zA-Z]', ' ', self.title)
 		temp_title = temp_title.lower()
 		temp_title = temp_title.split()
@@ -53,11 +60,11 @@ class Question(object):
 		temp_title = [ps.stem(word) for word in temp_title if not word in set(stopwords.words('english'))]
 		temp_title = ' '.join(temp_title)
 		title_corpus.append(temp_title)
-		cv = CountVectorizer(max_features = 1000)
-		return cv.fit_transform(title_corpus)
+		cv = CountVectorizer(max_features = 500)
+		return cv.fit_transform(title_corpus).toarray()
 
 	def clearBody(self):
-		body_corpus = []
+		body_corpus = joblib.load('mainapp/body_corpus.sav')
 		temp_body = re.sub('[^a-zA-Z]', ' ', self.body)
 		temp_body = temp_body.lower()
 		temp_body = temp_body.split()
@@ -66,7 +73,7 @@ class Question(object):
 		temp_body = ' '.join(temp_body)
 		body_corpus.append(temp_body)
 		cv = CountVectorizer(max_features = 1000)
-		return cv.fit_transform(body_corpus)
+		return cv.fit_transform(body_corpus).toarray()
 
 	def applyFeatureScaling(self, X):
 		sc = StandardScaler(with_mean = True, with_std = True)

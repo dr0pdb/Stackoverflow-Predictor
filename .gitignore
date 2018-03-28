@@ -108,3 +108,8 @@ ENV/
 classifier/dataset
 
 mainapp/classifier.sav
+mainapp/body_corpus.sav
+mainapp/deleted.sav
+mainapp/reputation.sav
+mainapp/title_corpus.sav
+mainapp/y.sav
