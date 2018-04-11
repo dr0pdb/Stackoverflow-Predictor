@@ -1,4 +1,7 @@
 # Stackoverflow Predictor
+
+![](stackoverflow_logo.png)
+
 Stackoverflow Predictor is a Machine Learning driven full stack web application which aims at classifying a **Stackoverflow** question into closed or open depending on the various features such as ```Title```, ```Body```, ```Reputation of User``` etc.
 
 It is my first attempt at trying out various algorithms popular in the field of **Machine learning** and **Natural Language Processing**. As a result of this, the main focus has been on the basics and the fundamental algorithms which are easy to understand and implement using the various tools and libraries at the disposal.
