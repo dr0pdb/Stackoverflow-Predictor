@@ -1,1 +1,7 @@
-<p> The final result is: {{outcome}} </p>
+<P><strong>Question: </strong>{{ question.title }}<br><strong>Result: </strong>
+	{% if outcome == 1 %}
+		Highly likely to be closed.
+	{% else %}
+		Great! Less likely to be closed.
+	{% endif %}
+</P>
