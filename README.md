@@ -25,6 +25,7 @@ There is definitely scope for improvement and after exploring the field even mor
 5. Numpy
 6. Django
 7. Django-Bootstrap3
+8. Tickle
 
 ## Modules required
 The ```REQUIREMENTS.txt``` file can be used to install all the required modules instantly.
